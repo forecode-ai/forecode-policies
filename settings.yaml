@@ -1,0 +1,9 @@
+apiVersion: forecode/v1
+kind: Settings
+values:
+  scope_resolution:
+    environment_aliases: {production: prod, prd: prod, stage: staging}
+  exception_limits:
+    max_days: 180
+    environments: {prod: 30}
+    notice_days: 14

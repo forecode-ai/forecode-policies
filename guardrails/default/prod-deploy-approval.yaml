@@ -1,0 +1,17 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: prod-deploy-approval
+title: Deploys to production need an approval
+message: Deploy to a declared production environment that requires an approval (a reviewer or a manual gate).
+decision:
+  rationale: >-
+    A production deploy changes what customers use. An approval gives a person the chance to stop a bad change and
+    leaves a record of who allowed it. A deploy job without a declared environment can't be checked, so it is
+    reported too.
+  decided: {date: 2026-10-08, by: ForeCode default pack}
+enforcement:
+  default: expected
+  environments: {prod: required, production: required, prd: required}
+rule:
+  template: require_approval
+  params: {environments: ['(?i)^(prod|production|prd)([-_.].*)?$']}

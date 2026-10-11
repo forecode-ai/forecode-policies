@@ -1,0 +1,7 @@
+apiVersion: forecode/v1
+kind: Administrators
+organisation: [kschandramouli]
+departments:
+  digital: ["@forecode-ai/digital"]
+teams:
+  web: ["@forecode-ai/web"]

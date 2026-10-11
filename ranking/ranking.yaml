@@ -1,0 +1,17 @@
+apiVersion: forecode/v1
+kind: RankingPolicy
+weights:
+  deployment: 0.35
+  build: 0.15
+  compliance: 0.2
+  reuse: 0.1
+  recency: 0.1
+  similarity: 0.1
+  acceptance: 0.0
+deprecations:
+  - id: ssh-deploys
+    kind: deploy_method
+    name: '^ssh_script$'
+    action: demote
+    reason: SSH deploy scripts are retired for new services (guardrail no-ssh-deploy-to-prod).
+    prefer: a Helm, ECS, SAM or Terraform deploy

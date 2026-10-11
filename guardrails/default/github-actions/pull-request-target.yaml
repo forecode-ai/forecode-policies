@@ -1,0 +1,49 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: gha-pull-request-target
+title: pull_request_target workflows never check out the pull request's code
+message: >-
+  Under pull_request_target, don't check out or fetch the pull request head; use pull_request for building
+  contributed code, or split privileged steps into a workflow_run workflow.
+scope: {platforms: [github-actions]}
+decision:
+  rationale: >-
+    pull_request_target runs with the base repository's secrets and a write token. Checking out the pull request's
+    code there runs code from anyone who can open a pull request with those privileges ("pwn request").
+  decided: {date: 2026-10-08, by: ForeCode default pack, link: https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/}
+enforcement: {default: required}
+rule:
+  rego: |
+    untrusted := `github\.event\.pull_request\.head\.|github\.head_ref|refs/pull/`
+
+    privileged if {
+    	some t in input.pipeline.triggers
+    	t.event == "pull_request_target"
+    }
+
+    violations contains v if {
+    	privileged
+    	some job in input.pipeline.jobs
+    	some step in job.steps
+    	step.kind == "checkout"
+    	some value in step.inputs
+    	regex.match(untrusted, value)
+    	v := {"job": job.id, "step": step.id, "detail": "checks out the pull request's code with base repository privileges"}
+    }
+
+    violations contains v if {
+    	privileged
+    	some job in input.pipeline.jobs
+    	some step in job.steps
+    	is_string(step.command)
+    	some line in split(step.command, "\n")
+    	fetches_pull_request(line)
+    	v := {"job": job.id, "step": step.id, "detail": "fetches the pull request's code with base repository privileges"}
+    }
+
+    fetches_pull_request(line) if regex.match(`\bgh\s+pr\s+checkout\b`, line)
+
+    fetches_pull_request(line) if {
+    	regex.match(`\bgit\s+(fetch|checkout|switch|pull)\b`, line)
+    	regex.match(untrusted, line)
+    }

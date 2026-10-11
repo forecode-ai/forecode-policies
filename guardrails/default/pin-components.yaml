@@ -1,0 +1,17 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: pin-components
+title: Reusable components are pinned to immutable versions
+message: Pin the component to an immutable version (a full commit SHA or an image digest).
+decision:
+  rationale: >-
+    Tags and branches can be moved to new code without any change in your repository, and compromised third-party
+    components have spread exactly that way. An immutable version means a change in what runs is always a reviewed
+    change in your repository.
+  decided: {date: 2026-10-08, by: ForeCode default pack}
+  alternatives: [allow tags from verified publishers only]
+enforcement: {default: expected}
+rule:
+  template: pin_versions
+  # Components referenced by a path inside the same repository are versioned with it.
+  params: {allow: ['^\./', '^\.\./']}

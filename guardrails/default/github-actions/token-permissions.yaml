@@ -1,0 +1,15 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: gha-token-permissions
+title: GITHUB_TOKEN permissions are declared explicitly
+message: "Add a top-level `permissions:` block (for example `contents: read`) and widen it per job only where needed."
+scope: {platforms: [github-actions]}
+decision:
+  rationale: >-
+    Without a permissions block the GITHUB_TOKEN gets the repository or organisation default, which is often write
+    access to everything. Declaring permissions makes the token's power visible and reviewable in the workflow.
+  decided: {date: 2026-10-08, by: ForeCode default pack}
+enforcement: {default: expected}
+rule:
+  template: permission_limits
+  params: {default: write, require_explicit: true}

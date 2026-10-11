@@ -1,0 +1,19 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: no-pipe-to-shell
+title: Downloaded scripts aren't piped straight into a shell
+message: Download the script, verify its checksum or signature, then run it; or use a pinned component instead.
+decision:
+  rationale: >-
+    Piping a download into a shell runs whatever the server returns at that moment, unreviewed and unpinned, with
+    the job's credentials. A compromised or spoofed host gets code execution in your pipeline.
+  decided: {date: 2026-10-08, by: ForeCode default pack}
+  alternatives: [allow approved installer hosts through the template's allow list]
+enforcement: {default: expected}
+rule:
+  template: forbid_command
+  params:
+    patterns:
+      - '(curl|wget)\b[^|]*\|\s*(sudo\s+(-E\s+)?)?(ba|z|da|k)?sh\b'
+      - '(ba|z)?sh\s+(-c\s+)?["'']?\$\(\s*(curl|wget)\b'
+    allow: []

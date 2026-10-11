@@ -1,0 +1,14 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: no-blanket-write
+title: Pipelines don't grant write access to everything
+message: Grant write access only to the scopes the job needs.
+decision:
+  rationale: >-
+    Blanket write permissions let any step, including third-party components, change code, releases and settings.
+    A compromised step can then do far more damage than the job needs to do its work.
+  decided: {date: 2026-10-08, by: ForeCode default pack}
+enforcement: {default: expected}
+rule:
+  template: permission_limits
+  params: {allowed: {'*': read}, default: write, require_explicit: false}

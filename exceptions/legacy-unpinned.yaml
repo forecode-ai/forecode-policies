@@ -1,0 +1,8 @@
+apiVersion: forecode/v1
+kind: Exception
+id: legacy-unpinned
+guardrail: pin-components
+scope: {repositories: [forecode-ai/sample-legacy-risky]}
+reason: Legacy order export is being replaced in Q1; pinning its actions is not worth the change risk until then.
+approved: {by: kschandramouli, date: 2026-10-11}
+expires: 2026-11-08

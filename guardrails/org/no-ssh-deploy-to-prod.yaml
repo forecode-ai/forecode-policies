@@ -1,0 +1,18 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: no-ssh-deploy-to-prod
+title: Production isn't deployed by hand-run SSH scripts
+message: Deploy production through a deploy tool with a recorded rollout (Helm, ECS, SAM, Terraform), not over SSH.
+decision:
+  rationale: >-
+    SSH deploy scripts change servers in place with no record of what ran and no automatic rollback. The platform
+    team retired them for new services in 2025; existing ones move as they are touched.
+  decided: {date: 2026-10-11, by: kschandramouli}
+  alternatives: [Allow SSH deploys with an approval, which keeps the missing rollback]
+enforcement:
+  default: expected
+scope: {environments: [prod]}
+rule:
+  template: forbid_command
+  params:
+    patterns: ['^\s*(ssh|scp)\s']

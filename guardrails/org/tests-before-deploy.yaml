@@ -1,0 +1,18 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: tests-before-deploy
+title: Tests run before every production deploy
+message: Run the project's tests (or, for infrastructure, validate it) in a job the production deploy depends on.
+decision:
+  rationale: >-
+    A deploy that doesn't wait for the tests can ship a change the tests would have caught. Running them in a job the
+    deploy depends on, not alongside it, means a failing test stops the release.
+  decided: {date: 2026-10-11, by: kschandramouli}
+enforcement:
+  default: recommended
+  environments: {prod: expected}
+rule:
+  template: required_before
+  params:
+    step: {command: '\b(npm (run )?test|node --test|pytest|python3? -m (unittest|pytest)|terraform validate|go test)\b'}
+    environments: ['^prod']

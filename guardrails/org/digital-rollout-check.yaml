@@ -1,0 +1,17 @@
+apiVersion: forecode/v1
+kind: Guardrail
+id: digital-rollout-check
+title: Digital teams wait for the rollout in Helm deploys
+message: Add `--wait` (or `--atomic`) to `helm upgrade`, so a release whose pods never become ready fails the job.
+scope: {departments: [digital]}
+decision:
+  rationale: >-
+    Without waiting for the rollout the deploy job succeeds even when the new pods never become ready, so failed
+    changes look like successful ones and the change failure rate is understated.
+  decided: {date: 2026-10-11, by: kschandramouli}
+enforcement: {default: recommended}
+rule:
+  template: forbid_command
+  params:
+    patterns: ['\bhelm\s+upgrade\b']
+    allow: ['\s--(wait|atomic)\b']
